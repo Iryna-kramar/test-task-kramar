@@ -25,7 +25,7 @@ function LoginForm() {
     event.preventDefault();
     dispatch(authLoginApi({ username, password }));
     if (authState.isLoginSuccess ){
-        navigate("/")
+        navigate("/users")
     }
     setUsername("");
     setPassword("");
