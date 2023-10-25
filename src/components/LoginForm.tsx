@@ -1,17 +1,39 @@
-import React, {useState} from "react";
-import { Form, Button } from 'react-bootstrap';
+import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { AppDispatch } from "../store";
+import { authLoginApi, AuthState } from "../store/reducers/authSlice";
+import { Form, Button } from "react-bootstrap";
 
 function LoginForm() {
-    const [email, setEmail] = useState<string>('')
-    const [password, setPassword] = useState<string>('')
+  const authState: AuthState = useSelector((state: any) => state.auth);
+  const dispatch = useDispatch<AppDispatch>();
+
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  const usernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUsername(event.target.value);
+  };
+
+  const passwordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(event.target.value);
+  };
+
+  const handleSubmit = (event: React.SyntheticEvent) => {
+    event.preventDefault();
+    dispatch(authLoginApi({ username, password }));
+    setUsername("");
+    setPassword("");
+  };
+
   return (
     <Form className="d-grid gap-2" onSubmit={handleSubmit}>
       <Form.Group className="mb-3" controlId="formBasicEmail">
-        <Form.Label>Email address</Form.Label>
+        <Form.Label>Username</Form.Label>
         <Form.Control
-          type="email"
-          placeholder="Enter email"
-          onChange={(e) => setEmail(e.target.value)}
+          type="username"
+          placeholder="Enter username"
+          onChange={usernameChange}
         />
       </Form.Group>
 
@@ -20,7 +42,7 @@ function LoginForm() {
         <Form.Control
           type="password"
           placeholder="Password"
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={passwordChange}
         />
       </Form.Group>
       <Form.Group className="mb-3" controlId="formBasicCheckbox">
@@ -29,7 +51,11 @@ function LoginForm() {
       <Button variant="primary" type="submit" size="lg">
         <span className="">Login</span>
       </Button>
-      <Form.Text>{errorMessage}</Form.Text>
+      <Form.Text>
+        {authState.isLoginPending && <div>Loading...</div>} 
+        {authState.isLoginSuccess && <div>Success.</div>} 
+        {authState.errorMessage && <div>{authState.errorMessage}</div>}
+      </Form.Text>
     </Form>
   );
 }
