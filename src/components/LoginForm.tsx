@@ -3,10 +3,12 @@ import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch } from "../store";
 import { authLoginApi, AuthState } from "../store/reducers/authSlice";
 import { Form, Button } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 
 function LoginForm() {
   const authState: AuthState = useSelector((state: any) => state.auth);
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -22,12 +24,16 @@ function LoginForm() {
   const handleSubmit = (event: React.SyntheticEvent) => {
     event.preventDefault();
     dispatch(authLoginApi({ username, password }));
+    if (authState.isLoginSuccess ){
+        navigate("/")
+    }
     setUsername("");
     setPassword("");
   };
 
+
   return (
-    <Form className="d-grid gap-2" onSubmit={handleSubmit}>
+    <Form className="d-grid gap-2" onSubmit={handleSubmit} >
       <Form.Group className="mb-3" controlId="formBasicEmail">
         <Form.Label>Username</Form.Label>
         <Form.Control
@@ -52,8 +58,7 @@ function LoginForm() {
         <span className="">Login</span>
       </Button>
       <Form.Text>
-        {authState.isLoginPending && <div>Loading...</div>} 
-        {authState.isLoginSuccess && <div>Success.</div>} 
+        {authState.isLoginPending && <div>Loading...</div>}
         {authState.errorMessage && <div>{authState.errorMessage}</div>}
       </Form.Text>
     </Form>
